@@ -7,13 +7,17 @@ body, html {
     background-color: #f7f7f7;
 }
 
+#leftPane, #rightPane {
+    flex: 1;  /* Previously, this was flex: 1; */
+    width: 50%; /* Ensures each pane takes up half of the parent's width */
+    box-sizing: border-box; /* Make sure padding and borders are included in the total width and height */
+}
+
 #leftPane {
-    flex: 1; /* Take up 1 portion of the space */
     padding: 20px;
 }
 
 #rightPane {
-    flex: 1; /* Take up 1 portion of the space */
     position: relative; /* Relative positioning for the canvas */
 }
 
