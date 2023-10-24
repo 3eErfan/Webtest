@@ -8,32 +8,27 @@ document.addEventListener("DOMContentLoaded", function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Function to generate a random number between a range
-    function randomIntFromRange(low, high) {
-        return Math.floor(Math.random() * (high - low + 1) + low);
-    }
-
-    // Object to represent a rectangle on the canvas
-    function Rectangle(x, y, width, height, dx, dy) {
+    function Rectangle(x, y, width, height, dx, dy, isMoving) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.dx = dx; // Change in x (speed in the x direction)
-        this.dy = dy; // Change in y (speed in the y direction)
+        this.dx = dx; // velocity in x
+        this.dy = dy; // velocity in y
+        this.isMoving = isMoving; // whether this rectangle is moving
 
-        // Draw the rectangle
         this.draw = function() {
             ctx.beginPath();
             ctx.rect(this.x, this.y, this.width, this.height);
-            ctx.fillStyle = 'blue'; // for example, color the rectangles blue
+            ctx.fillStyle = this.isMoving ? 'red' : 'grey'; // distinguish moving vs stationary
             ctx.fill();
             ctx.closePath();
         };
 
-        // Update the rectangle's position
         this.update = function() {
-            // If the rectangle hits the canvas boundaries, reverse its direction
+            if (!this.isMoving) return; // if it's not meant to move, don't update position
+
+            // reverse direction if it hits the boundary
             if (this.x + this.width > canvas.width || this.x < 0) {
                 this.dx = -this.dx;
             }
@@ -41,34 +36,48 @@ document.addEventListener("DOMContentLoaded", function () {
                 this.dy = -this.dy;
             }
 
-            // Update the rectangle's position
             this.x += this.dx;
             this.y += this.dy;
             this.draw();
         };
     }
 
-    // Create a bunch of rectangles
+    // Let's create a grid and rectangles
     var rectangles = [];
-    for (var i = 0; i < 50; i++) { // for example, create 50 rectangles
-        var width = randomIntFromRange(10, 120); // random width between 10 and 120
-        var height = randomIntFromRange(10, 60); // random height between 10 and 60
-        var x = randomIntFromRange(0, canvas.width - width);
-        var y = randomIntFromRange(0, canvas.height - height);
-        var dx = randomIntFromRange(-2, 2); // random velocity in the x direction
-        var dy = randomIntFromRange(-2, 2); // random velocity in the y direction
 
-        rectangles.push(new Rectangle(x, y, width, height, dx, dy));
+    // Parameters for grid
+    var numRows = 10;
+    var numCols = 10;
+    var rectWidth = canvas.width / numCols;
+    var rectHeight = canvas.height / numRows;
+
+    // Create stationary rectangles in grid
+    for (var row = 0; row < numRows; row++) {
+        for (var col = 0; col < numCols; col++) {
+            rectangles.push(new Rectangle(
+                col * rectWidth, // x
+                row * rectHeight, // y
+                rectWidth, // width
+                rectHeight, // height
+                0, // dx
+                0, // dy
+                false // isMoving
+            ));
+        }
     }
 
-    // Animation function
+    // Add three moving rectangles (you can set their initial positions and velocities as you like)
+    rectangles.push(new Rectangle(100, 100, rectWidth, rectHeight, 2, 2, true));
+    rectangles.push(new Rectangle(200, 200, rectWidth, rectHeight, -1, 1, true));
+    rectangles.push(new Rectangle(300, 150, rectWidth, rectHeight, 1, -1, true));
+
     function animate() {
         requestAnimationFrame(animate); // Create an animation loop
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-        // Draw and update all rectangles
         rectangles.forEach(function(rectangle) {
-            rectangle.update();
+            rectangle.draw(); // First draw all rectangles, stationary or moving
+            rectangle.update(); // Then update those that are moving
         });
     }
 
