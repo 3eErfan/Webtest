@@ -1,0 +1,16 @@
+/* styles.css */
+body, html {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;  /* Ensure no scrollbars appear */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f7f7f7;
+}
+
+#plotCanvas {
+    display: block; /* Remove potential page-break/white-space */
+    width: 100vw;
+    height: 100vh;
+}
